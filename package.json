@@ -1,0 +1,29 @@
+{
+  "name": "IAMPM-ChatBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node --inspect=5858 ./src/index.ts",
+    "watch": "nodemon --exec \"npm run start\" --watch src --ext ts",
+    "lint": "tslint ./src/**/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkhovrich/IAMPM-ChatBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dkhovrich/IAMPM-ChatBot/issues"
+  },
+  "homepage": "https://github.com/dkhovrich/IAMPM-ChatBot#readme",
+  "devDependencies": {
+    "@types/node": "^10.5.2",
+    "nodemon": "^1.18.1",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
+  }
+}

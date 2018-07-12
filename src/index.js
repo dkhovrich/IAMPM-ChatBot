@@ -1,9 +1,13 @@
 const express = require('express');
-const app = express();
-const port = 3000;
+const mongoose = require('mongoose');
 
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
+const port = 3000;
+const app = express();
+
+mongoose.connect('mongodb://localhost/chatbot');
+mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
+
+app.use(express.json());
+app.use('/glossaries', require('./routers/glossaryRouter'));
 
 app.listen(port, () => console.log(`Server is listening on port ${port}`));

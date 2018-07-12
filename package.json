@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "express": "^4.16.3",
-    "mongoose": "^5.2.3"
+    "mongoose": "^5.2.3",
+    "password-hash": "^1.2.2"
   }
 }

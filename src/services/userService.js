@@ -32,7 +32,7 @@ class UserService {
     async create(email, password) {
         validate(email, password);
 
-        if (await isExists(email)) {
+        if (await isExistsByEmail(email)) {
             throw new UserAlreadyExistsError(email);
         }
 
@@ -55,10 +55,7 @@ class UserService {
             throw new UserUnauthorizedError(email);
         }
 
-        return {
-            id: user.id,
-            email: user.email
-        };
+        return { id: user.id, email: user.email };
     }
 }
 
@@ -92,12 +89,12 @@ async function getUserByEmail(email) {
 }
 
 /**
- * @method isExists
+ * @method isExistsByEmail
  * @description Check if user exists in database by email
  * @param {string} email
  * @returns {Promise<boolean>} True if user exists; otherwise false
  */
-async function isExists(email) {
+async function isExistsByEmail(email) {
     const user = await User.findOne({ email });
     return !!user;
 }

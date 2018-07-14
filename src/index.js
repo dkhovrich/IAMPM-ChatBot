@@ -10,14 +10,15 @@ const auth = require('./routers/authRouter');
 const errorHandler = require('./middleware/errorHandler');
 
 const port = 3000;
+const authOptions = { session: false };
 const app = express();
 
 app.use(passport.initialize());
 app.use(express.json());
 
 app.use('/auth', auth);
-app.use('/users', users);
-app.use('/glossaries', passport.authenticate('jwt', { session: false }), glossaries);
+app.use('/users', passport.authenticate('jwt', authOptions), users);
+app.use('/glossaries', passport.authenticate('jwt', authOptions), glossaries);
 
 app.use(errorHandler());
 app.listen(port, () => console.log(`Server is listening on port ${port}`));

@@ -1,4 +1,4 @@
-const BaseError = require('../errors/BaseError');
+const BaseError = require('../errors/baseError');
 
 module.exports = function () {
     return function (err, req, res, next) {

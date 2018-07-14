@@ -1,6 +1,6 @@
 const Glossary = require('../database/glossaryModel');
-const ValidationError = require('../errors/ValidationError');
-const BaseError = require('../errors/BaseError');
+const ValidationError = require('../errors/validationError');
+const BaseError = require('../errors/baseError');
 
 class GlossaryNotFoundError extends BaseError {
     constructor(id) {

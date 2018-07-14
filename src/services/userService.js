@@ -2,8 +2,9 @@ const passwordHash = require('password-hash');
 const validator = require('validator');
 
 const User = require('../database/userModel');
-const ValidationError = require('../errors/ValidationError');
-const BaseError = require('../errors/BaseError');
+const ValidationError = require('../errors/validationError');
+const BaseError = require('../errors/baseError');
+const ConflictError = require('../errors/conflictError');
 
 class UserAlreadyExistsError extends BaseError {
     constructor(email) {
@@ -60,6 +61,9 @@ class UserService {
         }
 
         validateUserModel(model);
+        if (await isUpdateEmailConflict(id, model.email)) {
+            throw new ConflictError();
+        }
 
         const user = await getUserById(id);
         user.email = model.email;
@@ -176,6 +180,16 @@ async function isExistsByEmail(email) {
 async function isExistsById(id) {
     const user = await User.findById(id);
     return !!user;
+}
+
+/**
+ * @param {string} id
+ * @param {string} email
+ * @returns {Promise<boolean>}
+ */
+async function isUpdateEmailConflict(id, email) {
+    const users = await User.find({ _id: { $ne: id }, email });
+    return users.length !== 0;
 }
 
 module.exports = new UserService();

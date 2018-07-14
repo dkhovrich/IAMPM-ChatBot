@@ -1,4 +1,5 @@
 const passwordHash = require('password-hash');
+const validator = require('validator');
 
 const User = require('../database/userModel');
 const ValidationError = require('../errors/ValidationError');
@@ -11,8 +12,8 @@ class UserAlreadyExistsError extends BaseError {
 }
 
 class UserNotFoundError extends BaseError {
-    constructor(email) {
-        super(404, `User with email ${email} not found`);
+    constructor(data) {
+        super(404, `User with id or email ${data} not found`);
     }
 }
 
@@ -22,10 +23,19 @@ class UserUnauthorizedError extends BaseError {
     }
 }
 
+/**
+ * @typedef {Object} UserType
+ * @property {string} email
+ * @property {string} password
+ */
+
 class UserService {
+    async getAll() {
+        const users = await User.find();
+        return users.map(user => ({ id: user.id, email: user.email }));
+    }
+
     /**
-     * @method create
-     * @description Create user in database
      * @param {string} email
      * @param {string} password
      */
@@ -41,8 +51,42 @@ class UserService {
     }
 
     /**
-     * @method login
-     * @description Login by email and password
+     * @param {string} id
+     * @param {UserType} model
+     */
+    async update(id, model) {
+        if (!id || typeof id !== 'string') {
+            throw new ValidationError();
+        }
+
+        validateUserModel(model);
+
+        const user = await getUserById(id);
+        user.email = model.email;
+
+        if (model.password) {
+            user.password = passwordHash.generate(model.password);
+        }
+
+        await User.updateOne({ _id: id }, user);
+    }
+
+    /**
+     * @param {string} id
+     */
+    async delete(id) {
+        if (!id || typeof id !== 'string') {
+            throw new ValidationError();
+        }
+
+        if (!await isExistsById(id)) {
+            throw new UserNotFoundError(id);
+        }
+
+        await User.deleteOne({ _id: id });
+    }
+
+    /**
      * @param {string} email
      * @param {string} password
      * @returns {Object} user object
@@ -64,7 +108,7 @@ class UserService {
  * @param {string} password
  */
 function validate(email, password) {
-    if (!email || typeof email !== 'string') {
+    if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
         throw new ValidationError();
     }
 
@@ -74,8 +118,23 @@ function validate(email, password) {
 }
 
 /**
-* @method getUserByEmail
-* @description Get user by email
+ * @param {UserType} model
+ */
+function validateUserModel(model) {
+    if (!model || typeof model !== 'object') {
+        throw new ValidationError();
+    }
+
+    if (!model.email || typeof model.email !== 'string' || !validator.isEmail(model.email)) {
+        throw new ValidationError();
+    }
+
+    if (typeof model.password === 'string' && !model.password) {
+        throw new ValidationError();
+    }
+}
+
+/**
 * @param {string} email
 * @returns {Object} user object
 */
@@ -89,13 +148,33 @@ async function getUserByEmail(email) {
 }
 
 /**
- * @method isExistsByEmail
- * @description Check if user exists in database by email
+ * @param {string} id
+ * @returns {UserType} user model
+ */
+async function getUserById(id) {
+    const user = User.findById(id);
+    if (!user) {
+        throw new UserNotFoundError(id);
+    }
+
+    return user;
+}
+
+/**
  * @param {string} email
- * @returns {Promise<boolean>} True if user exists; otherwise false
+ * @returns {Promise<boolean>}
  */
 async function isExistsByEmail(email) {
     const user = await User.findOne({ email });
+    return !!user;
+}
+
+/**
+ * @param {string} id
+ * @returns {Promise<boolean>}
+ */
+async function isExistsById(id) {
+    const user = await User.findById(id);
     return !!user;
 }
 

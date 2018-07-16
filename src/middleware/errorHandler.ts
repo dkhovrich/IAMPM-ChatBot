@@ -1,7 +1,7 @@
-const BaseError = require('../errors/baseError');
+import BaseError from '../errors/baseError';
 
-module.exports = function () {
-    return function (err, req, res, next) {
+export default function () {
+    return function (err: any, req: any, res: any, next: any) {
         if (res.headersSent) {
             return next(err);
         }
@@ -12,4 +12,4 @@ module.exports = function () {
         const statusCode = err instanceof BaseError ? err.statusCode : 500;
         res.status(statusCode).send(err.message);
     };
-};
+}

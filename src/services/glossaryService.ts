@@ -1,31 +1,21 @@
-const Glossary = require('../database/glossaryModel');
-const ValidationError = require('../errors/validationError');
-const BaseError = require('../errors/baseError');
+import Glossary from '../database/glossaryModel';
+import ValidationError from '../errors/validationError';
+import BaseError from '../errors/baseError';
+
+import { IGlossaryModel } from '../models/glossaryModel';
 
 class GlossaryNotFoundError extends BaseError {
-    constructor(id) {
+    constructor(id: string) {
         super(404, `Glossary with id ${id} not found`);
     }
 }
 
-/**
- * @typedef {Object} GlossaryType
- * @property {string} title 
- */
-
 class GlossaryService {
-    /**
-     * @returns {Promise<Array>} Array of glossary items
-     */
-    async getAll() {
+    public async getAll(): Promise<any[]> {
         return await Glossary.find();
     }
 
-    /**
-     * @param {string} id
-     * @returns {Promise} Glossary item
-     */
-    async getById(id) {
+    public async getById(id: string): Promise<any> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -38,19 +28,12 @@ class GlossaryService {
         return glossary;
     }
 
-    /**
-     * @param {GlossaryType} model
-     */
-    async create(model) {
+    public async create(model: IGlossaryModel): Promise<void> {
         validate(model);
         await Glossary.create(model);
     }
 
-    /**
-     * @param {string} id
-     * @param {GlossaryType} model
-     */
-    async update(id, model) {
+    public async update(id: string, model: IGlossaryModel): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -63,10 +46,7 @@ class GlossaryService {
         await Glossary.updateOne({ _id: id }, model);
     }
 
-    /**
-     * @param {string} id
-     */
-    async delete(id) {
+    public async delete(id: string): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -79,10 +59,7 @@ class GlossaryService {
     }
 }
 
-/**
- * @param {GlossaryType} model
-*/
-function validate(model) {
+function validate(model: IGlossaryModel): void {
     if (!model || typeof model !== 'object') {
         throw new ValidationError();
     }
@@ -92,13 +69,9 @@ function validate(model) {
     }
 }
 
-/**
- * @param {string} id
- * @returns {Promise<boolean>}
- */
-async function isExists(id) {
+async function isExists(id: string): Promise<boolean> {
     const glossary = await Glossary.findById(id);
     return !!glossary;
 }
 
-module.exports = new GlossaryService();
+export default new GlossaryService();

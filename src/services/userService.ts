@@ -1,46 +1,39 @@
+// tslint:disable-next-line
 const passwordHash = require('password-hash');
-const validator = require('validator');
+import validator from 'validator';
 
-const User = require('../database/userModel');
-const ValidationError = require('../errors/validationError');
-const BaseError = require('../errors/baseError');
-const ConflictError = require('../errors/conflictError');
+import User from '../database/userModel';
+import ValidationError from '../errors/validationError';
+import BaseError from '../errors/baseError';
+import ConflictError from '../errors/conflictError';
+
+import { IUserModel } from '../models/userModel';
 
 class UserAlreadyExistsError extends BaseError {
-    constructor(email) {
+    constructor(email: string) {
         super(409, `User with email ${email} already exists`);
     }
 }
 
 class UserNotFoundError extends BaseError {
-    constructor(data) {
+    constructor(data: string) {
         super(404, `User with id or email ${data} not found`);
     }
 }
 
 class UserUnauthorizedError extends BaseError {
-    constructor(email) {
+    constructor(email: string) {
         super(401, `User with email ${email} is not authorized`);
     }
 }
 
-/**
- * @typedef {Object} UserType
- * @property {string} email
- * @property {string} password
- */
-
 class UserService {
-    async getAll() {
-        const users = await User.find();
+    public async getAll(): Promise<any[]> {
+        const users = await User.find() as any[];
         return users.map(user => ({ id: user.id, email: user.email }));
     }
 
-    /**
-     * @param {string} email
-     * @param {string} password
-     */
-    async create(email, password) {
+    public async create(email: string, password: string): Promise<void> {
         validate(email, password);
 
         if (await isExistsByEmail(email)) {
@@ -51,11 +44,7 @@ class UserService {
         await User.create({ email, password });
     }
 
-    /**
-     * @param {string} id
-     * @param {UserType} model
-     */
-    async update(id, model) {
+    public async update(id: string, model: IUserModel): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -75,10 +64,7 @@ class UserService {
         await User.updateOne({ _id: id }, user);
     }
 
-    /**
-     * @param {string} id
-     */
-    async delete(id) {
+    public async delete(id: string): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -90,12 +76,7 @@ class UserService {
         await User.deleteOne({ _id: id });
     }
 
-    /**
-     * @param {string} email
-     * @param {string} password
-     * @returns {Object} user object
-     */
-    async login(email, password) {
+    public async login(email: string, password: string): Promise<any> {
         validate(email, password);
 
         const user = await getUserByEmail(email);
@@ -107,11 +88,7 @@ class UserService {
     }
 }
 
-/**
- * @param {string} email
- * @param {string} password
- */
-function validate(email, password) {
+function validate(email: string, password: string): void {
     if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
         throw new ValidationError();
     }
@@ -121,10 +98,7 @@ function validate(email, password) {
     }
 }
 
-/**
- * @param {UserType} model
- */
-function validateUserModel(model) {
+function validateUserModel(model: IUserModel): void {
     if (!model || typeof model !== 'object') {
         throw new ValidationError();
     }
@@ -138,11 +112,7 @@ function validateUserModel(model) {
     }
 }
 
-/**
-* @param {string} email
-* @returns {Object} user object
-*/
-async function getUserByEmail(email) {
+async function getUserByEmail(email: string): Promise<any> {
     const user = User.findOne({ email });
     if (!user) {
         throw new UserNotFoundError(email);
@@ -151,12 +121,8 @@ async function getUserByEmail(email) {
     return user;
 }
 
-/**
- * @param {string} id
- * @returns {UserType} user model
- */
-async function getUserById(id) {
-    const user = User.findById(id);
+async function getUserById(id: string): Promise<any> {
+    const user: any = await User.findById(id);
     if (!user) {
         throw new UserNotFoundError(id);
     }
@@ -164,32 +130,19 @@ async function getUserById(id) {
     return user;
 }
 
-/**
- * @param {string} email
- * @returns {Promise<boolean>}
- */
-async function isExistsByEmail(email) {
+async function isExistsByEmail(email: string): Promise<boolean> {
     const user = await User.findOne({ email });
     return !!user;
 }
 
-/**
- * @param {string} id
- * @returns {Promise<boolean>}
- */
-async function isExistsById(id) {
+async function isExistsById(id: string): Promise<boolean> {
     const user = await User.findById(id);
     return !!user;
 }
 
-/**
- * @param {string} id
- * @param {string} email
- * @returns {Promise<boolean>}
- */
-async function isUpdateEmailConflict(id, email) {
+async function isUpdateEmailConflict(id: string, email: string): Promise<boolean> {
     const users = await User.find({ _id: { $ne: id }, email });
     return users.length !== 0;
 }
 
-module.exports = new UserService();
+export default new UserService();

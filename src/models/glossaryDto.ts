@@ -6,8 +6,8 @@ export interface IGlossaryDto {
 }
 
 export class GlossaryDto implements IGlossaryDto {
-    public id: string;
-    public title: string;
+    id: string;
+    title: string;
 
     public static create(model: IGlossaryModel): GlossaryDto {
         return {

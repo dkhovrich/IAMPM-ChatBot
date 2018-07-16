@@ -11,12 +11,12 @@ import UserNotFoundError from '../errors/userErrors/userNotFoundError';
 import UserUnauthorizedError from '../errors/userErrors/userUnauthorizedError';
 
 class UserService {
-    public async getAll(): Promise<UserDto[]> {
+    async getAll(): Promise<UserDto[]> {
         const users: IUserModel[] = await User.find();
         return users.map(UserDto.create);
     }
 
-    public async create(email: string, password: string): Promise<void> {
+    async create(email: string, password: string): Promise<void> {
         this.validate(email, password);
 
         if (await this.isExistsByEmail(email)) {
@@ -27,7 +27,7 @@ class UserService {
         await User.create({ email, password });
     }
 
-    public async update(id: string, model: IUserModel): Promise<void> {
+    async update(id: string, model: IUserModel): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -47,7 +47,7 @@ class UserService {
         await User.updateOne({ _id: id }, user);
     }
 
-    public async delete(id: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -59,7 +59,7 @@ class UserService {
         await User.deleteOne({ _id: id });
     }
 
-    public async login(email: string, password: string): Promise<UserDto> {
+    async login(email: string, password: string): Promise<UserDto> {
         this.validate(email, password);
 
         const user: IUserModel = await this.getUserByEmail(email);

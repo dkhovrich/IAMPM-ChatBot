@@ -6,10 +6,10 @@ export interface IUserDto {
 }
 
 export class UserDto implements IUserDto {
-    public id: string;
-    public email: string;
+    id: string;
+    email: string;
 
-    public static create(model: IUserModel): UserDto {
+    static create(model: IUserModel): UserDto {
         return {
             id: model.id,
             email: model.email

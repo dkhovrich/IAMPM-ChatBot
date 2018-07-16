@@ -4,12 +4,12 @@ import ValidationError from '../errors/validationError';
 import GlossaryNotFoundError from '../errors/glossaryErrors/glossaryNotFoundError';
 
 class GlossaryService {
-    public async getAll(): Promise<GlossaryDto[]> {
+    async getAll(): Promise<GlossaryDto[]> {
         const items: IGlossaryModel[] = await Glossary.find();
         return items.map(GlossaryDto.create);
     }
 
-    public async getById(id: string): Promise<GlossaryDto> {
+    async getById(id: string): Promise<GlossaryDto> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -22,12 +22,12 @@ class GlossaryService {
         return GlossaryDto.create(glossary);
     }
 
-    public async create(model: IGlossaryModel): Promise<void> {
+    async create(model: IGlossaryModel): Promise<void> {
         this.validate(model);
         await Glossary.create(model);
     }
 
-    public async update(id: string, model: IGlossaryModel): Promise<void> {
+    async update(id: string, model: IGlossaryModel): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -40,7 +40,7 @@ class GlossaryService {
         await Glossary.updateOne({ _id: id }, model);
     }
 
-    public async delete(id: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }

@@ -21,7 +21,7 @@ class GlossaryService {
     }
 
     public async create(model: IGlossaryModel): Promise<void> {
-        validate(model);
+        this.validate(model);
         await Glossary.create(model);
     }
 
@@ -30,11 +30,11 @@ class GlossaryService {
             throw new ValidationError();
         }
 
-        if (await !isExists(id)) {
+        if (await !this.isExists(id)) {
             throw new GlossaryNotFoundError(id);
         }
 
-        validate(model);
+        this.validate(model);
         await Glossary.updateOne({ _id: id }, model);
     }
 
@@ -43,27 +43,27 @@ class GlossaryService {
             throw new ValidationError();
         }
 
-        if (await !isExists(id)) {
+        if (await !this.isExists(id)) {
             throw new GlossaryNotFoundError(id);
         }
 
         await Glossary.deleteOne({ _id: id });
     }
-}
 
-function validate(model: IGlossaryModel): void {
-    if (!model || typeof model !== 'object') {
-        throw new ValidationError();
+    private validate(model: IGlossaryModel): void {
+        if (!model || typeof model !== 'object') {
+            throw new ValidationError();
+        }
+
+        if (!model.title || typeof model.title !== 'string') {
+            throw new ValidationError();
+        }
     }
 
-    if (!model.title || typeof model.title !== 'string') {
-        throw new ValidationError();
+    private async isExists(id: string): Promise<boolean> {
+        const glossary = await Glossary.findById(id);
+        return !!glossary;
     }
-}
-
-async function isExists(id: string): Promise<boolean> {
-    const glossary = await Glossary.findById(id);
-    return !!glossary;
 }
 
 export default new GlossaryService();

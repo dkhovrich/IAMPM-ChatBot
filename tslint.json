@@ -15,8 +15,7 @@
         "trailing-comma": false,
         "only-arrow-functions": false,
         "space-before-function-paren": false,
-        "ordered-imports": false,
-        "max-classes-per-file": false
+        "ordered-imports": false
     },
     "rulesDirectory": []
 }

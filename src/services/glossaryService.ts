@@ -1,13 +1,15 @@
 import { IGlossaryModel, Glossary } from '../database/glossaryModel';
+import { GlossaryDto } from '../models/glossaryDto';
 import ValidationError from '../errors/validationError';
 import GlossaryNotFoundError from '../errors/glossaryErrors/glossaryNotFoundError';
 
 class GlossaryService {
-    public async getAll(): Promise<IGlossaryModel[]> {
-        return await Glossary.find();
+    public async getAll(): Promise<GlossaryDto[]> {
+        const items: IGlossaryModel[] = await Glossary.find();
+        return items.map(GlossaryDto.create);
     }
 
-    public async getById(id: string): Promise<IGlossaryModel> {
+    public async getById(id: string): Promise<GlossaryDto> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
@@ -17,7 +19,7 @@ class GlossaryService {
             throw new GlossaryNotFoundError(id);
         }
 
-        return glossary;
+        return GlossaryDto.create(glossary);
     }
 
     public async create(model: IGlossaryModel): Promise<void> {

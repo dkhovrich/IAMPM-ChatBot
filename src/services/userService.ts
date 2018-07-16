@@ -3,6 +3,7 @@ const passwordHash = require('password-hash');
 import validator from 'validator';
 
 import { IUserModel, User } from '../database/userModel';
+import { UserDto } from '../models/userDto';
 import ValidationError from '../errors/validationError';
 import ConflictError from '../errors/conflictError';
 import UserAlreadyExistsError from '../errors/userErrors/userAlreadyExistsError';
@@ -10,8 +11,9 @@ import UserNotFoundError from '../errors/userErrors/userNotFoundError';
 import UserUnauthorizedError from '../errors/userErrors/userUnauthorizedError';
 
 class UserService {
-    public async getAll(): Promise<IUserModel[]> {
-        return await User.find();
+    public async getAll(): Promise<UserDto[]> {
+        const users: IUserModel[] = await User.find();
+        return users.map(UserDto.create);
     }
 
     public async create(email: string, password: string): Promise<void> {
@@ -57,15 +59,15 @@ class UserService {
         await User.deleteOne({ _id: id });
     }
 
-    public async login(email: string, password: string): Promise<any> {
+    public async login(email: string, password: string): Promise<UserDto> {
         this.validate(email, password);
 
-        const user = await this.getUserByEmail(email);
+        const user: IUserModel = await this.getUserByEmail(email);
         if (!passwordHash.verify(password, user.password)) {
             throw new UserUnauthorizedError(email);
         }
 
-        return { id: user.id, email: user.email };
+        return UserDto.create(user);
     }
 
     private validate(email: string, password: string): void {
@@ -92,7 +94,7 @@ class UserService {
         }
     }
 
-    private async getUserByEmail(email: string): Promise<any> {
+    private async getUserByEmail(email: string): Promise<IUserModel> {
         const user = User.findOne({ email });
         if (!user) {
             throw new UserNotFoundError(email);
@@ -101,8 +103,8 @@ class UserService {
         return user;
     }
 
-    private async getUserById(id: string): Promise<any> {
-        const user: any = await User.findById(id);
+    private async getUserById(id: string): Promise<IUserModel> {
+        const user = await User.findById(id);
         if (!user) {
             throw new UserNotFoundError(id);
         }

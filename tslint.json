@@ -15,7 +15,14 @@
         "trailing-comma": false,
         "only-arrow-functions": false,
         "space-before-function-paren": false,
-        "ordered-imports": false
+        "ordered-imports": false,
+        "member-ordering": [
+            true,
+            {
+                "order": "fields-first"
+            }
+        ],
+        "object-literal-sort-keys": false
     },
     "rulesDirectory": []
 }

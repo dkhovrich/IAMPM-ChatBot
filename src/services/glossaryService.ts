@@ -1,26 +1,18 @@
-import Glossary from '../database/glossaryModel';
+import { IGlossaryModel, Glossary } from '../database/glossaryModel';
 import ValidationError from '../errors/validationError';
-import BaseError from '../errors/baseError';
-
-import { IGlossaryModel } from '../models/glossaryModel';
-
-class GlossaryNotFoundError extends BaseError {
-    constructor(id: string) {
-        super(404, `Glossary with id ${id} not found`);
-    }
-}
+import GlossaryNotFoundError from '../errors/glossaryErrors/glossaryNotFoundError';
 
 class GlossaryService {
-    public async getAll(): Promise<any[]> {
+    public async getAll(): Promise<IGlossaryModel[]> {
         return await Glossary.find();
     }
 
-    public async getById(id: string): Promise<any> {
+    public async getById(id: string): Promise<IGlossaryModel> {
         if (!id || typeof id !== 'string') {
             throw new ValidationError();
         }
 
-        const glossary = await Glossary.findById(id);
+        const glossary: IGlossaryModel = await Glossary.findById(id);
         if (!glossary) {
             throw new GlossaryNotFoundError(id);
         }

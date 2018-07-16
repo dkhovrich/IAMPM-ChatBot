@@ -2,35 +2,16 @@
 const passwordHash = require('password-hash');
 import validator from 'validator';
 
-import User from '../database/userModel';
+import { IUserModel, User } from '../database/userModel';
 import ValidationError from '../errors/validationError';
-import BaseError from '../errors/baseError';
 import ConflictError from '../errors/conflictError';
-
-import { IUserModel } from '../models/userModel';
-
-class UserAlreadyExistsError extends BaseError {
-    constructor(email: string) {
-        super(409, `User with email ${email} already exists`);
-    }
-}
-
-class UserNotFoundError extends BaseError {
-    constructor(data: string) {
-        super(404, `User with id or email ${data} not found`);
-    }
-}
-
-class UserUnauthorizedError extends BaseError {
-    constructor(email: string) {
-        super(401, `User with email ${email} is not authorized`);
-    }
-}
+import UserAlreadyExistsError from '../errors/userErrors/userAlreadyExistsError';
+import UserNotFoundError from '../errors/userErrors/userNotFoundError';
+import UserUnauthorizedError from '../errors/userErrors/userUnauthorizedError';
 
 class UserService {
-    public async getAll(): Promise<any[]> {
-        const users = await User.find() as any[];
-        return users.map(user => ({ id: user.id, email: user.email }));
+    public async getAll(): Promise<IUserModel[]> {
+        return await User.find();
     }
 
     public async create(email: string, password: string): Promise<void> {

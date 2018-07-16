@@ -1,7 +1,11 @@
-import mongoose from 'mongoose';
+import { Document, Schema, Model, model } from 'mongoose';
 
-const schema = new mongoose.Schema({
+export interface IGlossaryModel extends Document {
+    title: string;
+}
+
+export const schema = new Schema({
     title: String
 }, { timestamps: true });
 
-export default mongoose.model('Glossary', schema);
+export const Glossary: Model<IGlossaryModel> = model<IGlossaryModel>('Glossary', schema);

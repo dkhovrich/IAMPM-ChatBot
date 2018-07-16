@@ -17,7 +17,7 @@ process.on('SIGINT', () => {
     });
 });
 
-async function seedUsers() {
+async function seedUsers(): Promise<void> {
     try {
         await UserService.create('admin@admin.com', 'admin');
     } catch (err) {

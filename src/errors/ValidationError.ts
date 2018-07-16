@@ -1,4 +1,4 @@
-const BaseError = require('./baseError');
+import BaseError from './baseError';
 
 class ValidationError extends BaseError {
     constructor() {
@@ -6,4 +6,4 @@ class ValidationError extends BaseError {
     }
 }
 
-module.exports = ValidationError;
+export default ValidationError;

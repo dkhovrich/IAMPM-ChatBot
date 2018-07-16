@@ -1,9 +1,8 @@
-const mongoose = require('mongoose');
-const endpoint = require('../config').databaseEndPoint;
+import mongoose from 'mongoose';
+import config from '../config';
+import UserService from '../services/userService';
 
-const UserService = require('../services/userService');
-
-mongoose.connect(endpoint);
+mongoose.connect(config.databaseEndPoint);
 mongoose.connection.on('connected', async () => {
     console.log('Mongoose default connection is opened');
     await seedUsers();
@@ -18,7 +17,7 @@ process.on('SIGINT', () => {
     });
 });
 
-async function seedUsers() {
+async function seedUsers(): Promise<void> {
     try {
         await UserService.create('admin@admin.com', 'admin');
     } catch (err) {

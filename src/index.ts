@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import cors from 'cors';
 import passport from 'passport';
 
 import './database/db';
@@ -15,6 +16,7 @@ const app: Express = express();
 
 app.use(passport.initialize());
 app.use(express.json());
+app.use(cors());
 
 app.use('/auth', auth);
 app.use('/users', passport.authenticate('jwt', authOptions), users);

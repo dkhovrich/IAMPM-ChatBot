@@ -1,7 +1,8 @@
+import { Request, Response, NextFunction } from 'express';
 import BaseError from '../errors/baseError';
 
 export default function () {
-    return function (err: any, req: any, res: any, next: any) {
+    return function (err: Error, req: Request, res: Response, next: NextFunction) {
         if (res.headersSent) {
             return next(err);
         }

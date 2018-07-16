@@ -6,7 +6,7 @@ import config from '../config';
 
 const router: Router = express.Router();
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
         const user = await UserService.login(email, password);

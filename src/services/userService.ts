@@ -2,6 +2,7 @@
 const passwordHash = require('password-hash');
 import validator from 'validator';
 
+import BaseService from './baseService';
 import { IUserModel, User } from '../database/userModel';
 import { UserDto } from '../models/userDto';
 import ValidationError from '../errors/validationError';
@@ -10,64 +11,74 @@ import UserAlreadyExistsError from '../errors/userErrors/userAlreadyExistsError'
 import UserNotFoundError from '../errors/userErrors/userNotFoundError';
 import UserUnauthorizedError from '../errors/userErrors/userUnauthorizedError';
 
-class UserService {
+class UserService extends BaseService {
     async getAll(): Promise<UserDto[]> {
-        const users: IUserModel[] = await User.find();
-        return users.map(UserDto.create);
+        return await this.handleConnection(async () => {
+            const users: IUserModel[] = await User.find();
+            return users.map(UserDto.create);
+        });
     }
 
     async create(email: string, password: string): Promise<void> {
-        this.validate(email, password);
+        return await this.handleConnection(async () => {
+            this.validate(email, password);
 
-        if (await this.isExistsByEmail(email)) {
-            throw new UserAlreadyExistsError(email);
-        }
+            if (await this.isExistsByEmail(email)) {
+                throw new UserAlreadyExistsError(email);
+            }
 
-        password = passwordHash.generate(password);
-        await User.create({ email, password });
+            password = passwordHash.generate(password);
+            await User.create({ email, password });
+        });
     }
 
     async update(id: string, model: IUserModel): Promise<void> {
-        if (!id || typeof id !== 'string') {
-            throw new ValidationError();
-        }
+        return await this.handleConnection(async () => {
+            if (!id || typeof id !== 'string') {
+                throw new ValidationError();
+            }
 
-        this.validateUserModel(model);
-        if (await this.isUpdateEmailConflict(id, model.email)) {
-            throw new ConflictError();
-        }
+            this.validateUserModel(model);
+            if (await this.isUpdateEmailConflict(id, model.email)) {
+                throw new ConflictError();
+            }
 
-        const user = await this.getUserById(id);
-        user.email = model.email;
+            const user = await this.getUserById(id);
+            user.email = model.email;
 
-        if (model.password) {
-            user.password = passwordHash.generate(model.password);
-        }
+            if (model.password) {
+                user.password = passwordHash.generate(model.password);
+            }
 
-        await User.updateOne({ _id: id }, user);
+            await User.updateOne({ _id: id }, user);
+        });
     }
 
     async delete(id: string): Promise<void> {
-        if (!id || typeof id !== 'string') {
-            throw new ValidationError();
-        }
+        return await this.handleConnection(async () => {
+            if (!id || typeof id !== 'string') {
+                throw new ValidationError();
+            }
 
-        if (!await this.isExistsById(id)) {
-            throw new UserNotFoundError(id);
-        }
+            if (!await this.isExistsById(id)) {
+                throw new UserNotFoundError(id);
+            }
 
-        await User.deleteOne({ _id: id });
+            await User.deleteOne({ _id: id });
+        });
     }
 
     async login(email: string, password: string): Promise<UserDto> {
-        this.validate(email, password);
+        return await this.handleConnection(async () => {
+            this.validate(email, password);
 
-        const user: IUserModel = await this.getUserByEmail(email);
-        if (!passwordHash.verify(password, user.password)) {
-            throw new UserUnauthorizedError(email);
-        }
+            const user: IUserModel = await this.getUserByEmail(email);
+            if (!passwordHash.verify(password, user.password)) {
+                throw new UserUnauthorizedError(email);
+            }
 
-        return UserDto.create(user);
+            return UserDto.create(user);
+        });
     }
 
     private validate(email: string, password: string): void {

@@ -1,55 +1,66 @@
+import BaseService from './baseService';
 import { IGlossaryModel, Glossary } from '../database/glossaryModel';
 import { GlossaryDto } from '../models/glossaryDto';
 import ValidationError from '../errors/validationError';
 import GlossaryNotFoundError from '../errors/glossaryErrors/glossaryNotFoundError';
 
-class GlossaryService {
+class GlossaryService extends BaseService {
     async getAll(): Promise<GlossaryDto[]> {
-        const items: IGlossaryModel[] = await Glossary.find();
-        return items.map(GlossaryDto.create);
+        return await this.handleConnection(async () => {
+            const items: IGlossaryModel[] = await Glossary.find();
+            return items.map(GlossaryDto.create);
+        });
     }
 
     async getById(id: string): Promise<GlossaryDto> {
-        if (!id || typeof id !== 'string') {
-            throw new ValidationError();
-        }
+        return await this.handleConnection(async () => {
+            if (!id || typeof id !== 'string') {
+                throw new ValidationError();
+            }
 
-        const glossary: IGlossaryModel = await Glossary.findById(id);
-        if (!glossary) {
-            throw new GlossaryNotFoundError(id);
-        }
+            const glossary: IGlossaryModel = await Glossary.findById(id);
+            if (!glossary) {
+                throw new GlossaryNotFoundError(id);
+            }
 
-        return GlossaryDto.create(glossary);
+            return GlossaryDto.create(glossary);
+        });
     }
 
     async create(model: IGlossaryModel): Promise<void> {
-        this.validate(model);
-        await Glossary.create(model);
+        return await this.handleConnection(async () => {
+            this.validate(model);
+            await Glossary.create(model);
+        });
     }
 
     async update(id: string, model: IGlossaryModel): Promise<void> {
-        if (!id || typeof id !== 'string') {
-            throw new ValidationError();
-        }
+        return await this.handleConnection(async () => {
+            if (!id || typeof id !== 'string') {
+                throw new ValidationError();
+            }
 
-        if (await !this.isExists(id)) {
-            throw new GlossaryNotFoundError(id);
-        }
+            if (await !this.isExists(id)) {
+                throw new GlossaryNotFoundError(id);
+            }
 
-        this.validate(model);
-        await Glossary.updateOne({ _id: id }, model);
+            this.validate(model);
+            await Glossary.updateOne({ _id: id }, model);
+        });
     }
 
     async delete(id: string): Promise<void> {
-        if (!id || typeof id !== 'string') {
-            throw new ValidationError();
-        }
+        return await this.handleConnection(async () => {
+            if (!id || typeof id !== 'string') {
+                throw new ValidationError();
+            }
 
-        if (await !this.isExists(id)) {
-            throw new GlossaryNotFoundError(id);
-        }
+            if (await !this.isExists(id)) {
+                throw new GlossaryNotFoundError(id);
+            }
 
-        await Glossary.deleteOne({ _id: id });
+            await Glossary.deleteOne({ _id: id });
+        });
     }
 
     private validate(model: IGlossaryModel): void {

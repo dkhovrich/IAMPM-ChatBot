@@ -2,7 +2,6 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import passport from 'passport';
 
-import './database/db';
 import './middleware/passport';
 
 import users from './routers/userRouter';

@@ -11,7 +11,7 @@ class GlossaryParser {
     }
 
     execute(): IGlossaryDto[] {
-        this.validate(this.path);
+        this.validate();
 
         const csv: string = fs.readFileSync(this.path).toString();
         const data: IGlossaryDto[] = parse(csv, { delimiter: ';', columns: true });
@@ -19,8 +19,8 @@ class GlossaryParser {
         return data;
     }
 
-    private validate(path: string) {
-        if (!path || !fs.existsSync(path)) {
+    private validate(): void {
+        if (!this.path || !fs.existsSync(this.path)) {
             throw new Error('File not found');
         }
     }

@@ -1,6 +1,6 @@
 import BaseService from './baseService';
 import { IGlossaryModel, Glossary } from '../database/glossaryModel';
-import { GlossaryDto } from '../models/glossaryDto';
+import { IGlossaryDto, GlossaryDto } from '../models/glossaryDto';
 import ValidationError from '../errors/validationError';
 import GlossaryNotFoundError from '../errors/glossaryErrors/glossaryNotFoundError';
 
@@ -27,14 +27,24 @@ class GlossaryService extends BaseService {
         });
     }
 
-    async create(model: IGlossaryModel): Promise<void> {
-        return await this.handleConnection(async () => {
+    async create(model: IGlossaryDto): Promise<void> {
+        await this.handleConnection(async () => {
             this.validate(model);
             await Glossary.create(model);
         });
     }
 
-    async update(id: string, model: IGlossaryModel): Promise<void> {
+    async createMany(models: IGlossaryDto[]): Promise<void> {
+        await this.handleConnection(async () => {
+            models.forEach(this.validate);
+
+            for (const model of models) {
+                await Glossary.create(model);
+            }
+        });
+    }
+
+    async update(id: string, model: IGlossaryDto): Promise<void> {
         return await this.handleConnection(async () => {
             if (!id || typeof id !== 'string') {
                 throw new ValidationError();
@@ -63,7 +73,7 @@ class GlossaryService extends BaseService {
         });
     }
 
-    private validate(model: IGlossaryModel): void {
+    private validate(model: IGlossaryDto): void {
         if (!model || typeof model !== 'object') {
             throw new ValidationError();
         }

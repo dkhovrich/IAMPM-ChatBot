@@ -35,9 +35,9 @@ class GlossaryService extends BaseService {
     }
 
     async createMany(models: IGlossaryDto[]): Promise<void> {
-        await this.handleConnection(async () => {
-            models.forEach(this.validate);
+        models.forEach(this.validate);
 
+        await this.handleConnection(async () => {
             for (const model of models) {
                 await Glossary.create(model);
             }
@@ -78,7 +78,11 @@ class GlossaryService extends BaseService {
             throw new ValidationError();
         }
 
-        if (!model.title || typeof model.title !== 'string') {
+        if (!model.title || typeof model.title !== 'string' || model.title.length === 0) {
+            throw new ValidationError();
+        }
+
+        if (!model.text || typeof model.text !== 'string' || model.text.length === 0) {
             throw new ValidationError();
         }
     }

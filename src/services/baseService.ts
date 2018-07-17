@@ -8,6 +8,8 @@ abstract class BaseService {
         try {
             await mongoose.connect(config.databaseEndPoint);
             return await action();
+        } catch (err) {
+            throw err;
         } finally {
             await mongoose.connection.close();
         }

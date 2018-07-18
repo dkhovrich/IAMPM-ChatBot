@@ -7,7 +7,9 @@
         "start": "ts-node ./src/index.ts",
         "watch": "nodemon --exec \"npm run start\" --watch src --ext ts",
         "parser": "ts-node ./src/parser/index.ts",
-        "lint": "tslint ./src/**/*.ts"
+        "lint": "tslint ./src/**/*.ts",
+        "tsc": "tsc",
+        "postinstall": "npm run tsc"
     },
     "repository": {
         "type": "git",
@@ -20,21 +22,10 @@
         "url": "https://github.com/dkhovrich/IAMPM-ChatBot/issues"
     },
     "homepage": "https://github.com/dkhovrich/IAMPM-ChatBot#readme",
-    "devDependencies": {
-        "@types/cors": "^2.8.4",
-        "@types/csv-parse": "^1.1.11",
-        "@types/express": "^4.16.0",
-        "@types/lodash": "^4.14.111",
-        "@types/mongoose": "^5.2.0",
-        "@types/passport": "^0.4.5",
-        "@types/passport-jwt": "^3.0.1",
-        "@types/validator": "^9.4.1",
-        "@types/yargs": "^11.1.0",
-        "nodemon": "^1.18.1"
-    },
     "dependencies": {
         "cors": "^2.8.4",
         "csv-parse": "^2.5.0",
+        "dotenv": "^6.0.0",
         "express": "^4.16.3",
         "jsonwebtoken": "^8.3.0",
         "lodash": "^4.17.10",
@@ -46,6 +37,17 @@
         "tslint": "^5.10.0",
         "typescript": "^2.9.2",
         "validator": "^10.4.0",
-        "yargs": "^12.0.1"
+        "yargs": "^12.0.1",
+        "@types/cors": "^2.8.4",
+        "@types/csv-parse": "^1.1.11",
+        "@types/dotenv": "^4.0.3",
+        "@types/express": "^4.16.0",
+        "@types/lodash": "^4.14.111",
+        "@types/mongoose": "^5.2.0",
+        "@types/passport": "^0.4.5",
+        "@types/passport-jwt": "^3.0.1",
+        "@types/validator": "^9.4.1",
+        "@types/yargs": "^11.1.0",
+        "nodemon": "^1.18.1"
     }
 }

@@ -13,17 +13,32 @@ class GlossaryService extends BaseService {
     }
 
     async getById(id: string): Promise<GlossaryDto> {
-        return await this.handleConnection(async () => {
-            if (!id || typeof id !== 'string') {
-                throw new ValidationError();
-            }
+        if (!this.isValidString(id)) {
+            throw new ValidationError();
+        }
 
+        return await this.handleConnection(async () => {
             const glossary: IGlossaryModel = await Glossary.findById(id);
             if (!glossary) {
                 throw new GlossaryNotFoundError(id);
             }
 
             return GlossaryDto.create(glossary);
+        });
+    }
+
+    async find(key: string): Promise<GlossaryDto> {
+        if (!this.isValidString(key)) {
+            throw new ValidationError();
+        }
+
+        return await this.handleConnection(async () => {
+            const glossaries: IGlossaryModel[] = await Glossary.find({ title: new RegExp(key, 'i') });
+            if (glossaries.length === 0) {
+                throw new GlossaryNotFoundError(key);
+            }
+
+            return GlossaryDto.create(glossaries[0]);
         });
     }
 

@@ -1,8 +1,8 @@
 import BaseError from '../baseError';
 
 class GlossaryNotFoundError extends BaseError {
-    constructor(id: string) {
-        super(404, `Glossary with id ${id} not found`);
+    constructor(data: string) {
+        super(404, `Glossary not found. Data: ${data}`);
     }
 }
 

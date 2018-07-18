@@ -7,6 +7,7 @@ import './middleware/passport';
 
 import users from './routers/userRouter';
 import glossaries from './routers/glossaryRouter';
+import chatbotGlossaries from './routers/chatBotGlossaryRouter';
 import auth from './routers/authRouter';
 import errorHandler from './middleware/errorHandler';
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use('/auth', auth);
 app.use('/users', passport.authenticate('jwt', authOptions), users);
 app.use('/glossaries', passport.authenticate('jwt', authOptions), glossaries);
+app.use('/chatbot/glossaries', chatbotGlossaries);
 
 app.use(errorHandler());
 app.listen(port, () => console.log(`Server is listening on port ${port}`));

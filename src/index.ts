@@ -1,6 +1,9 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import passport from 'passport';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 import './database/db';
 import './middleware/passport';
@@ -11,7 +14,7 @@ import chatbotGlossaries from './routers/chatBotGlossaryRouter';
 import auth from './routers/authRouter';
 import errorHandler from './middleware/errorHandler';
 
-const port = 3000;
+const port: number = parseInt(process.env.PORT, null);
 const authOptions: passport.AuthenticateOptions = { session: false };
 const app: Express = express();
 

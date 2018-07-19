@@ -1,7 +1,11 @@
 import { argv } from 'yargs';
+import dotenv from 'dotenv';
+
 import GlossaryParser from './glossaryParser';
 import GlossaryService from '../services/glossaryService';
 import { IGlossaryDto } from '../models/glossaryDto';
+
+dotenv.config();
 
 (async () => {
     try {

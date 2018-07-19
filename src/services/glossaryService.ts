@@ -51,12 +51,7 @@ class GlossaryService extends BaseService {
 
     async createMany(models: IGlossaryDto[]): Promise<void> {
         models.forEach(this.validate);
-
-        await this.handleConnection(async () => {
-            for (const model of models) {
-                await Glossary.create(model);
-            }
-        });
+        await this.handleConnection(async () => await Glossary.insertMany(models));
     }
 
     async update(id: string, model: IGlossaryDto): Promise<void> {

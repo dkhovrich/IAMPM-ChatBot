@@ -16,13 +16,13 @@ router.get('/:id', asyncMiddleware(async (req: Request, res: Response) => {
 }));
 
 router.post('/', asyncMiddleware(async (req: Request, res: Response) => {
-    await GlossaryService.create(req.body);
-    res.sendStatus(201);
+    const glossary = await GlossaryService.create(req.body);
+    res.send(glossary).status(201);
 }));
 
 router.put('/:id', asyncMiddleware(async (req: Request, res: Response) => {
     await GlossaryService.update(req.params.id, req.body);
-    res.sendStatus(201);
+    res.sendStatus(200);
 }));
 
 router.delete('/:id', asyncMiddleware(async (req: Request, res: Response) => {

@@ -43,9 +43,11 @@ class GlossaryService extends BaseService {
     }
 
     async create(model: IGlossaryDto): Promise<void> {
-        await this.handleConnection(async () => {
-            this.validate(model);
-            await Glossary.create(model);
+        this.validate(model);
+
+        return await this.handleConnection(async () => {
+            const glossary: IGlossaryModel = await Glossary.create(model);
+            return GlossaryDto.create(glossary);
         });
     }
 

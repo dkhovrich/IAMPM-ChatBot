@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { validate } from 'jsonschema';
 import BaseService from './baseService';
 import { IGlossaryModel, Glossary } from '../database/glossaryModel';
@@ -15,7 +16,7 @@ class GlossaryService extends BaseService {
     }
 
     async getById(id: string): Promise<GlossaryDto> {
-        if (!this.isValidString(id)) {
+        if (!_.isString(id)) {
             throw new ValidationError();
         }
 
@@ -30,7 +31,7 @@ class GlossaryService extends BaseService {
     }
 
     async find(key: string): Promise<GlossaryDto> {
-        if (!this.isValidString(key)) {
+        if (!_.isString(key) || key.length === 0) {
             throw new ValidationError();
         }
 
@@ -60,7 +61,7 @@ class GlossaryService extends BaseService {
     }
 
     async update(id: string, model: IGlossaryDto): Promise<void> {
-        if (!id || typeof id !== 'string') {
+        if (!_.isString(id)) {
             throw new ValidationError();
         }
 

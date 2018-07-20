@@ -8,7 +8,7 @@
     },
     "scripts": {
         "start": "ts-node ./src/index.ts",
-        "watch": "nodemon --exec \"npm run start\" --watch src --ext ts",
+        "watch": "nodemon",
         "parser": "ts-node ./src/parser/index.ts",
         "lint": "tslint ./src/**/*.ts",
         "tsc": "tsc",

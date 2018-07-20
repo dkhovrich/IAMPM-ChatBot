@@ -1,3 +1,4 @@
+import { Schema } from 'jsonschema';
 import { IGlossaryModel } from '../database/glossaryModel';
 
 export interface IGlossaryDto {
@@ -19,3 +20,12 @@ export class GlossaryDto implements IGlossaryDto {
         };
     }
 }
+
+export const glossaryDtoJsonSchema: Schema = {
+    type: 'object',
+    properties: {
+        title: { type: 'string' },
+        text: { type: 'string' }
+    },
+    required: ['title', 'text']
+};

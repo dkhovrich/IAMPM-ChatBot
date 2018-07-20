@@ -1,15 +1,15 @@
 import express, { Request, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
 
+import jsonSchemaMiddleware from '../middleware/jsonSchemaMiddleware';
 import UserService from '../services/userService';
-import { IUserDto } from '../models/userDto';
+import { IUserDto, loginDtoJsonSchema } from '../models/userDto';
 
 const router: Router = express.Router();
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', jsonSchemaMiddleware(loginDtoJsonSchema), async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
-        const user: IUserDto = await UserService.login(email, password);
+        const user: IUserDto = await UserService.login(req.body);
         const token = jwt.sign(user, process.env.JWT_KEY);
         res.json({ token });
     } catch (err) {

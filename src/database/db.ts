@@ -10,7 +10,10 @@ process.on('SIGINT', () => {
 
 (async () => {
     try {
-        await UserService.create({ email: 'admin@admin.com', password: 'admin' });
+        await UserService.create({
+            email: process.env.ADMIN_EMAIL,
+            password: process.env.ADMIN_PASSWORD
+        });
     } catch (err) {
         console.log('Admin user exists');
     }

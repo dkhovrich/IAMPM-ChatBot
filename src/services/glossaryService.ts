@@ -39,9 +39,11 @@ class GlossaryService extends BaseService {
             const glossaries: IGlossaryModel[] = await Glossary.find({ title: new RegExp(key, 'i') });
             if (glossaries.length === 0) {
                 throw new GlossaryNotFoundError(key);
+            } else if (glossaries.length === 1) {
+                return GlossaryDto.create(glossaries[0]);
+            } else {
+                return glossaries.map(GlossaryDto.create);
             }
-
-            return GlossaryDto.create(glossaries[0]);
         });
     }
 

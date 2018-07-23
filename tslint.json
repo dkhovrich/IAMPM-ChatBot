@@ -37,7 +37,8 @@
             }
         ],
         "object-literal-sort-keys": false,
-        "no-trailing-whitespace": true
+        "no-trailing-whitespace": true,
+        "max-classes-per-file": false
     },
     "rulesDirectory": []
 }

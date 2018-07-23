@@ -36,7 +36,7 @@ class GlossaryService extends BaseService {
         }
 
         return await this.handleConnection(async () => {
-            const glossaries: IGlossaryModel[] = await Glossary.find({ $text: { $search: `${key}` } });
+            const glossaries: IGlossaryModel[] = await Glossary.find({ $text: { $search: key } });
             if (glossaries.length === 0) {
                 throw new GlossaryNotFoundError(key);
             } else if (glossaries.length === 1) {

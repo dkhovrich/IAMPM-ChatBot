@@ -13,10 +13,6 @@ abstract class BaseService {
             await mongoose.connection.close();
         }
     }
-
-    protected isValidString(str: string): boolean {
-        return str && typeof str === 'string' && str.length !== 0;
-    }
 }
 
 export default BaseService;

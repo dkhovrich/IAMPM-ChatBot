@@ -1,7 +1,9 @@
 import express, { Request, Response, Router } from 'express';
 
 import asyncMiddleware from '../middleware/asyncMiddleware';
+import jsonSchemaMiddleware from '../middleware/jsonSchemaMiddleware';
 import GlossaryService from '../services/glossaryService';
+import { glossaryDtoJsonSchema } from '../models/glossaryDto';
 
 const router: Router = express.Router();
 
@@ -15,12 +17,12 @@ router.get('/:id', asyncMiddleware(async (req: Request, res: Response) => {
     res.send(glossary);
 }));
 
-router.post('/', asyncMiddleware(async (req: Request, res: Response) => {
+router.post('/', jsonSchemaMiddleware(glossaryDtoJsonSchema), asyncMiddleware(async (req: Request, res: Response) => {
     const glossary = await GlossaryService.create(req.body);
     res.send(glossary).status(201);
 }));
 
-router.put('/:id', asyncMiddleware(async (req: Request, res: Response) => {
+router.put('/:id', jsonSchemaMiddleware(glossaryDtoJsonSchema), asyncMiddleware(async (req: Request, res: Response) => {
     await GlossaryService.update(req.params.id, req.body);
     res.sendStatus(200);
 }));

@@ -1,7 +1,9 @@
 import express, { Request, Response, Router } from 'express';
 
 import asyncMiddleware from '../middleware/asyncMiddleware';
+import jsonSchemaMiddleware from '../middleware/jsonSchemaMiddleware';
 import UserService from '../services/userService';
+import { loginDtoJsonSchema } from '../models/userDto';
 
 const router: Router = express.Router();
 
@@ -10,9 +12,8 @@ router.get('/', asyncMiddleware(async (req: Request, res: Response) => {
     res.send(users);
 }));
 
-router.post('/', asyncMiddleware(async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    await UserService.create(email, password);
+router.post('/', jsonSchemaMiddleware(loginDtoJsonSchema), asyncMiddleware(async (req: Request, res: Response) => {
+    await UserService.create(req.body);
     res.sendStatus(201);
 }));
 

@@ -10,6 +10,7 @@ import ConflictError from '../errors/conflictError';
 import UserAlreadyExistsError from '../errors/userErrors/userAlreadyExistsError';
 import UserNotFoundError from '../errors/userErrors/userNotFoundError';
 import UserUnauthorizedError from '../errors/userErrors/userUnauthorizedError';
+import { ICreateUserDto, ILoginDto } from '../models/userDto';
 
 class UserService extends BaseService {
     async getAll(): Promise<UserDto[]> {
@@ -19,26 +20,27 @@ class UserService extends BaseService {
         });
     }
 
-    async create(email: string, password: string): Promise<void> {
-        return await this.handleConnection(async () => {
-            this.validate(email, password);
+    async create(model: ICreateUserDto): Promise<void> {
+        if (!validator.isEmail(model.email)) {
+            throw new ValidationError();
+        }
 
-            if (await this.isExistsByEmail(email)) {
-                throw new UserAlreadyExistsError(email);
+        return await this.handleConnection(async () => {
+            if (await this.isExistsByEmail(model.email)) {
+                throw new UserAlreadyExistsError(model.email);
             }
 
-            password = passwordHash.generate(password);
-            await User.create({ email, password });
+            model.password = passwordHash.generate(model.password);
+            await User.create({ email: model.email, password: model.password });
         });
     }
 
-    async update(id: string, model: IUserModel): Promise<void> {
-        return await this.handleConnection(async () => {
-            if (!id || typeof id !== 'string') {
-                throw new ValidationError();
-            }
+    async update(id: string, model: ICreateUserDto): Promise<void> {
+        if (!id || typeof id !== 'string') {
+            throw new ValidationError();
+        }
 
-            this.validateUserModel(model);
+        return await this.handleConnection(async () => {
             if (await this.isUpdateEmailConflict(id, model.email)) {
                 throw new ConflictError();
             }
@@ -55,11 +57,11 @@ class UserService extends BaseService {
     }
 
     async delete(id: string): Promise<void> {
-        return await this.handleConnection(async () => {
-            if (!id || typeof id !== 'string') {
-                throw new ValidationError();
-            }
+        if (!id || typeof id !== 'string') {
+            throw new ValidationError();
+        }
 
+        return await this.handleConnection(async () => {
             if (!await this.isExistsById(id)) {
                 throw new UserNotFoundError(id);
             }
@@ -68,41 +70,19 @@ class UserService extends BaseService {
         });
     }
 
-    async login(email: string, password: string): Promise<UserDto> {
-        return await this.handleConnection(async () => {
-            this.validate(email, password);
+    async login(model: ILoginDto): Promise<UserDto> {
+        if (!validator.isEmail(model.email)) {
+            throw new ValidationError();
+        }
 
-            const user: IUserModel = await this.getUserByEmail(email);
-            if (!passwordHash.verify(password, user.password)) {
-                throw new UserUnauthorizedError(email);
+        return await this.handleConnection(async () => {
+            const user: IUserModel = await this.getUserByEmail(model.email);
+            if (!passwordHash.verify(model.password, user.password)) {
+                throw new UserUnauthorizedError(model.email);
             }
 
             return UserDto.create(user);
         });
-    }
-
-    private validate(email: string, password: string): void {
-        if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
-            throw new ValidationError();
-        }
-
-        if (!password || typeof password !== 'string') {
-            throw new ValidationError();
-        }
-    }
-
-    private validateUserModel(model: IUserModel): void {
-        if (!model || typeof model !== 'object') {
-            throw new ValidationError();
-        }
-
-        if (!model.email || typeof model.email !== 'string' || !validator.isEmail(model.email)) {
-            throw new ValidationError();
-        }
-
-        if (typeof model.password === 'string' && !model.password) {
-            throw new ValidationError();
-        }
     }
 
     private async getUserByEmail(email: string): Promise<IUserModel> {

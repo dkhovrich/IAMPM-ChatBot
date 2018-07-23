@@ -27,4 +27,6 @@ export const schema = new Schema({
     }
 }, { timestamps: true });
 
+schema.index({ 'title.rus': 'text', 'title.eng': 'text' });
+
 export const Glossary: Model<IGlossaryModel> = model<IGlossaryModel>('Glossary', schema);

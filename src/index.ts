@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// import './database/db';
+import './database/db';
 import './middleware/passport';
 
 import users from './routers/userRouter';

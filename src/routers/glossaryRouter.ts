@@ -2,14 +2,15 @@ import express, { Request, Response, Router } from 'express';
 
 import asyncMiddleware from '../middleware/asyncMiddleware';
 import jsonSchemaMiddleware from '../middleware/jsonSchemaMiddleware';
+import paginationMiddleware from '../middleware/paginationMiddleware';
 import GlossaryService from '../services/glossaryService';
 import { glossaryDtoJsonSchema } from '../models/glossaryDto';
 
 const router: Router = express.Router();
 
-router.get('/', asyncMiddleware(async (req: Request, res: Response) => {
-    const glossaries = await GlossaryService.get(req.query);
-    res.send(glossaries);
+router.get('/', paginationMiddleware(), asyncMiddleware(async (req: Request, res: Response) => {
+    const result = await GlossaryService.get(req.query);
+    res.send(result);
 }));
 
 router.get('/:id', asyncMiddleware(async (req: Request, res: Response) => {

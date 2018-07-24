@@ -8,16 +8,15 @@ import GlossaryNotFoundError from '../errors/glossaryErrors/glossaryNotFoundErro
 import { IGlossaryModel, Glossary } from '../database/glossaryModel';
 import { IGlossaryDto, GlossaryDto } from '../models/glossaryDto';
 import { IBaseRequest } from '../models/requestDto';
+import { Response } from '../models/responseDto';
 
 import { glossaryDtoJsonSchema } from '../models/glossaryDto';
 
 class GlossaryService extends BaseService {
-    async get(request: IBaseRequest): Promise<GlossaryDto[]> {
+    async get(request: IBaseRequest): Promise<Response<GlossaryDto>> {
         return await this.handleConnection(async () => {
             const condition: any = this.getSearchConditions(request);
-            const items: IGlossaryModel[] = await Glossary.find(condition);
-
-            return items.map(GlossaryDto.create);
+            return await this.findWithPagination(Glossary, condition, request.pageNumber, request.pageSize, GlossaryDto.create);
         });
     }
 

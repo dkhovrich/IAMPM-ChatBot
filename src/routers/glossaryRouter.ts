@@ -8,7 +8,7 @@ import { glossaryDtoJsonSchema } from '../models/glossaryDto';
 const router: Router = express.Router();
 
 router.get('/', asyncMiddleware(async (req: Request, res: Response) => {
-    const glossaries = await GlossaryService.getAll();
+    const glossaries = await GlossaryService.get(req.query);
     res.send(glossaries);
 }));
 

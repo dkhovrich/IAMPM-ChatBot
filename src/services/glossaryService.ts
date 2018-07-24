@@ -1,16 +1,22 @@
 import * as _ from 'lodash';
 import { validate } from 'jsonschema';
 import BaseService from './baseService';
-import { IGlossaryModel, Glossary } from '../database/glossaryModel';
-import { IGlossaryDto, GlossaryDto } from '../models/glossaryDto';
+
 import ValidationError from '../errors/validationError';
 import GlossaryNotFoundError from '../errors/glossaryErrors/glossaryNotFoundError';
+
+import { IGlossaryModel, Glossary } from '../database/glossaryModel';
+import { IGlossaryDto, GlossaryDto } from '../models/glossaryDto';
+import { IBaseRequest } from '../models/requestDto';
+
 import { glossaryDtoJsonSchema } from '../models/glossaryDto';
 
 class GlossaryService extends BaseService {
-    async getAll(): Promise<GlossaryDto[]> {
+    async get(request: IBaseRequest): Promise<GlossaryDto[]> {
         return await this.handleConnection(async () => {
-            const items: IGlossaryModel[] = await Glossary.find();
+            const condition: any = this.getSearchConditions(request);
+            const items: IGlossaryModel[] = await Glossary.find(condition);
+
             return items.map(GlossaryDto.create);
         });
     }
@@ -93,6 +99,16 @@ class GlossaryService extends BaseService {
     private async isExists(id: string): Promise<boolean> {
         const glossary = await Glossary.findById(id);
         return !!glossary;
+    }
+
+    private getSearchConditions(request: IBaseRequest): any {
+        const conditions: any = {};
+
+        if (request.searchCriteria) {
+            conditions.$text = { $search: request.searchCriteria };
+        }
+
+        return conditions;
     }
 }
 

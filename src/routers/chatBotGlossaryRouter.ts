@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 
 import asyncMiddleware from '../middleware/asyncMiddleware';
-import jsonSchemaMiddleware from '../middleware/jsonSchemaMiddleware';
+import jsonSchemaMiddleware, { RequestPartToValidate } from '../middleware/jsonSchemaMiddleware';
 
 import ChatBotGlossaryService from '../services/chatBotGlossaryService';
 import { ChatBotGlossaryDto, glossarySearchSchema } from '../models/chatBotGlossaryDto';
@@ -13,7 +13,7 @@ router.get('/:id', asyncMiddleware(async (req: Request, res: Response) => {
     res.send(glossary);
 }));
 
-router.get('/', jsonSchemaMiddleware(glossarySearchSchema), asyncMiddleware(async (req: Request, res: Response) => {
+router.get('/', jsonSchemaMiddleware(glossarySearchSchema, RequestPartToValidate.query), asyncMiddleware(async (req: Request, res: Response) => {
     const glossaries: ChatBotGlossaryDto[] = await ChatBotGlossaryService.search(req.query.search);
     res.send(glossaries);
 }));

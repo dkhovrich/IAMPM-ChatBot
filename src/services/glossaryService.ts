@@ -35,23 +35,6 @@ class GlossaryService extends BaseService {
         });
     }
 
-    async find(key: string): Promise<GlossaryDto> {
-        if (!_.isString(key) || key.length === 0) {
-            throw new ValidationError();
-        }
-
-        return await this.handleConnection(async () => {
-            const glossaries: IGlossaryModel[] = await Glossary.find({ $text: { $search: key } });
-            if (glossaries.length === 0) {
-                throw new GlossaryNotFoundError(key);
-            } else if (glossaries.length === 1) {
-                return GlossaryDto.create(glossaries[0]);
-            } else {
-                return glossaries.map(GlossaryDto.create);
-            }
-        });
-    }
-
     async create(model: IGlossaryDto): Promise<void> {
         return await this.handleConnection(async () => {
             const glossary: IGlossaryModel = await Glossary.create(model);

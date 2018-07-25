@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export default function (schema: Schema) {
     return function (req: Request, res: Response, next: NextFunction) {
-        if (validate(req.body, schema).valid) {
+        if (validate(req.body, schema).valid || validate(req.query, schema).valid) {
             next();
         } else {
             next(new ValidationError('JsonSchema validation failed!', req.body, schema));
